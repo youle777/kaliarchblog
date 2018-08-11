@@ -12,5 +12,9 @@ Welcome to KaliArch Blog's documentation!
 
    ecs_autobak_other_region
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
 
    cdb_upload_cos
