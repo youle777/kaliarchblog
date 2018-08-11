@@ -10,4 +10,5 @@ Welcome to KaliArch Blog's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   how_to_be_a_rich_man
+   ecs_autobak_other_region
+   cdb_upload_cos
