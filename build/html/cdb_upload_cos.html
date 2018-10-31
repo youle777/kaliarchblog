@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>一、背景 &mdash; MING&#39;s BLOG 1.0.0 documentation</title>
+  <title>一、背景 &mdash; KaliArch&#39;s BLOG 1.0.0 documentation</title>
   
 
   
@@ -47,7 +47,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> MING's BLOG
+            <a href="index.html" class="icon icon-home"> KaliArch's BLOG
           
 
           
@@ -81,20 +81,26 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <p class="caption"><span class="caption-text">Python实现ECS自动镜像创建&amp;镜像复制至其他地域:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html">一、背景</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html#id3">三、测试</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html#id5">四、优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html#id4">二、代码</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html#id7">三、测试</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ecs_autobak_other_region.html#id10">四、优化</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Python实现腾讯云CDB备份文件自动上传到COS:</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">一、背景</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#id2">二、技术细节</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#id3">三、代码</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id4">3.1 配置文件</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#cdb-api">3.2 CDB API核心操作代码</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">3.4 日志记录核心代码</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cos-sdk">3.3 COS SDK核心操作代码</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">3.4 日志记录核心代码</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#id5">四、测试结果</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#id6">五、总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id6">四、测试结果</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id7">五、总结</a></li>
 </ul>
 
             
@@ -109,7 +115,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">MING's BLOG</a>
+          <a href="index.html">KaliArch's BLOG</a>
         
       </nav>
 
@@ -162,26 +168,28 @@
   <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#id1" id="id7">一、背景</a></li>
-<li><a class="reference internal" href="#id2" id="id8">二、技术细节</a></li>
-<li><a class="reference internal" href="#id3" id="id9">三、代码</a><ul>
-<li><a class="reference internal" href="#cdb-api" id="id10">3.2 CDB API核心操作代码</a></li>
-<li><a class="reference internal" href="#id4" id="id11">3.4 日志记录核心代码</a></li>
+<li><a class="reference internal" href="#id1" id="id8">一、背景</a></li>
+<li><a class="reference internal" href="#id2" id="id9">二、技术细节</a></li>
+<li><a class="reference internal" href="#id3" id="id10">三、代码</a><ul>
+<li><a class="reference internal" href="#id4" id="id11">3.1 配置文件</a></li>
+<li><a class="reference internal" href="#cdb-api" id="id12">3.2 CDB API核心操作代码</a></li>
+<li><a class="reference internal" href="#cos-sdk" id="id13">3.3 COS SDK核心操作代码</a></li>
+<li><a class="reference internal" href="#id5" id="id14">3.4 日志记录核心代码</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id5" id="id12">四、测试结果</a></li>
-<li><a class="reference internal" href="#id6" id="id13">五、总结</a></li>
+<li><a class="reference internal" href="#id6" id="id15">四、测试结果</a></li>
+<li><a class="reference internal" href="#id7" id="id16">五、总结</a></li>
 </ul>
 </div>
 <div class="section" id="id1">
-<h1><a class="toc-backref" href="#id7">一、背景</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id8">一、背景</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>需求：目前遇到的客户需求为将腾讯云CDB备份文件自动上传到腾讯云COS内，在此抛砖引玉，还有很多类似的需求均可以采用此类方法解决，线下IDC数据文件备份至云端COS内，或根据文件下载地址url将文件上传至COS内。</li>
 <li>思路：首先获取到CDB的备份下载url，通过COS的API上传文件，大佬如有更好的方法欢迎一块讨论。</li>
 </ul>
 </div>
 <div class="section" id="id2">
-<h1><a class="toc-backref" href="#id8">二、技术细节</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id9">二、技术细节</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
 <ul>
 <li><p class="first">COS：COS有API同时有SDK，这就很方便我们来通过Python对COS进行各类操作，<a class="reference external" href="https://cloud.tencent.com/document/product/436/12269">COS
 SDK for
@@ -202,9 +210,10 @@ Python</a></p>
 </ul>
 </div>
 <div class="section" id="id3">
-<h1><a class="toc-backref" href="#id9">三、代码</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/redhatxl/cdbbak_to_cos">github地址</a> ### 3.1
-配置文件</p>
+<h1><a class="toc-backref" href="#id10">三、代码</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://github.com/redhatxl/cdbbak_to_cos">github地址</a></p>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id11">3.1 配置文件</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># auth:kaliarch</span>
 <span class="c1"># func:将腾讯云cdb备份文件上传至cos制定的bucket内</span>
 <span class="c1"># python version:python3+</span>
@@ -245,8 +254,9 @@ Python</a></p>
 <span class="n">logfile_name</span> <span class="o">=</span> <span class="n">rdsbak_to_cos</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="cdb-api">
-<h2><a class="toc-backref" href="#id10">3.2 CDB API核心操作代码</a><a class="headerlink" href="#cdb-api" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">3.2 CDB API核心操作代码</a><a class="headerlink" href="#cdb-api" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#构建字典</span>
 <span class="n">keydict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;Action&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdb_action</span><span class="p">,</span>
@@ -277,7 +287,10 @@ Python</a></p>
 <span class="n">result_url</span> <span class="o">=</span> <span class="s1">&#39;https://&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdb_api_url</span> <span class="o">+</span> <span class="n">sign_str</span> <span class="o">+</span> <span class="s1">&#39;&amp;Signature=&#39;</span> <span class="o">+</span> <span class="n">result_sign</span>
 </pre></div>
 </div>
-<p>单独运行此模块可以得到以下信息： <img alt="image1" src="http://i2.51cto.com/images/blog/201807/16/d026283eb19a50748f4dbfef1c4f1480.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=" /> ### 3.3 COS SDK核心操作代码</p>
+<p>单独运行此模块可以得到以下信息： <img alt="image1" src="http://i2.51cto.com/images/blog/201807/16/d026283eb19a50748f4dbfef1c4f1480.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=" /></p>
+</div>
+<div class="section" id="cos-sdk">
+<h2><a class="toc-backref" href="#id13">3.3 COS SDK核心操作代码</a><a class="headerlink" href="#cos-sdk" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#根据文件大小自动选择简单上传或分块上传，分块上传具备断点续传功能</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">localfile</span><span class="p">:</span>
         <span class="n">localfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
@@ -295,8 +308,8 @@ Python</a></p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id4">
-<h2><a class="toc-backref" href="#id11">3.4 日志记录核心代码</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id14">3.4 日志记录核心代码</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#创建目录</span>
 <span class="k">def</span> <span class="nf">create_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">_LOGDIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">logdir_name</span><span class="p">)</span>
@@ -320,12 +333,12 @@ Python</a></p>
 </div>
 </div>
 </div>
-<div class="section" id="id5">
-<h1><a class="toc-backref" href="#id12">四、测试结果</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id6">
+<h1><a class="toc-backref" href="#id15">四、测试结果</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
 <p>获取CDB下载链接 <img alt="image2" src="http://i2.51cto.com/images/blog/201807/16/2f85f2561e012d54e03a5ff15815f29a.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=" /> 完成上传查看COS文件 <img alt="image3" src="http://i2.51cto.com/images/blog/201807/16/58ffab7bc61f224b535f4ceb1b6491d1.png?x-oss-process=image/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=" /></p>
 </div>
-<div class="section" id="id6">
-<h1><a class="toc-backref" href="#id13">五、总结</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id7">
+<h1><a class="toc-backref" href="#id16">五、总结</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li>优化:可以后期通过配合定时任务完成自动化任务</li>
 <li>扩展:<strong>源端</strong>：不仅仅局限于CDB备份文件，对于随便下载url，均可以上传到COS内。<strong>终端</strong>：终端也不仅局限于腾讯云COS，此思路方法也可用于其他云平台如阿里OSS,亚马逊Amazon
@@ -351,7 +364,7 @@ S3,百度云BOS 等。</li>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, 小明同学.
+        &copy; Copyright 2018, kaliarch
 
     </p>
   </div>
@@ -370,20 +383,14 @@ S3,百度云BOS 等。</li>
 
   
 
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0.0',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
 
   
 
