@@ -30,8 +30,10 @@
 三、代码
 ========
 
-`github地址 <https://github.com/redhatxl/cdbbak_to_cos>`__ ### 3.1
-配置文件
+`github地址 <https://github.com/redhatxl/cdbbak_to_cos>`__ 
+
+3.1 配置文件
+-----------------------
 
 ::
 
@@ -108,7 +110,10 @@
     #获取最终url
     result_url = 'https://' + self.cdb_api_url + sign_str + '&Signature=' + result_sign
 
-单独运行此模块可以得到以下信息： |image1| ### 3.3 COS SDK核心操作代码
+单独运行此模块可以得到以下信息： |image1| 
+
+3.3 COS SDK核心操作代码
+-----------------------
 
 ::
 
